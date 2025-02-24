@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>い and な Adjective Sort Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .box {
+            border: 2px solid #333;
+            border-radius: 10px;
+            width: 45%;
+            min-height: 300px;
+            padding: 10px;
+        }
+        .adjective {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            display: inline-block;
+            cursor: grab;
+            background-color: #f0f0f0;
+        }
+        .definition {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .correct {
+            background-color: #c8e6c9;
+        }
+        .incorrect {
+            background-color: #ffcdd2;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>い and な Adjective Sort Game</h1>
+    <p>Drag and drop the adjectives into the correct category. Each adjective shows its English meaning.</p>
+    <div class="container">
+        <div class="box" id="i-adjectives" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>い Adjectives</h2>
+        </div>
+        <div class="box" id="na-adjectives" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>な Adjectives</h2>
+        </div>
+    </div>
+
+    <div id="adjective-list"></div>
+    <button onclick="checkAnswers()">Check Answers</button>
+    <button onclick="resetGame()">Reset Game</button>
+    <p id="result"></p>
+
+    <script>
+        const adjectives = [
+            { word: 'たのしい', type: 'i', meaning: 'fun' },
+            { word: 'きれい', type: 'na', meaning: 'clean/beautiful' },
+            { word: 'おおきい', type: 'i', meaning: 'big' },
+            { word: 'ゆうめい', type: 'na', meaning: 'famous' },
+            { word: 'ちいさい', type: 'i', meaning: 'small' },
+            { word: 'しずか', type: 'na', meaning: 'quiet' },
+            { word: 'あたらしい', type: 'i', meaning: 'new' },
+            { word: 'げんき', type: 'na', meaning: 'healthy/energetic' },
+            { word: 'ふるい', type: 'i', meaning: 'old (not for people)' },
+            { word: 'べんり', type: 'na', meaning: 'convenient' },
+            { word: 'おもしろい', type: 'i', meaning: 'interesting/funny' },
+            { word: 'たいせつ', type: 'na', meaning: 'important' },
+            { word: 'あかるい', type: 'i', meaning: 'bright' },
+            { word: 'へん', type: 'na', meaning: 'strange' },
+            { word: 'かわいい', type: 'i', meaning: 'cute' },
+            { word: 'ひま', type: 'na', meaning: 'free (time)' },
+            { word: 'くらい', type: 'i', meaning: 'dark' },
+            { word: 'ていねい', type: 'na', meaning: 'polite' },
+            { word: 'ながい', type: 'i', meaning: 'long' },
+            { word: 'へいわ', type: 'na', meaning: 'peaceful' }
+        ];
+
+        const adjectiveList = document.getElementById('adjective-list');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createAdjectiveElements() {
+            shuffle(adjectives);
+            adjectiveList.innerHTML = '';
+            adjectives.forEach((adj, index) => {
+                const div = document.createElement('div');
+                div.classList.add('adjective');
+                div.setAttribute('draggable', true);
+                div.setAttribute('id', `adj-${index}`);
+                div.setAttribute('data-type', adj.type);
+                div.ondragstart = drag;
+                div.innerHTML = `${adj.word} <div class="definition">(${adj.meaning})</div>`;
+                adjectiveList.appendChild(div);
+            });
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData('text', event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData('text');
+            const element = document.getElementById(data);
+            if (event.target.classList.contains('box')) {
+                event.target.appendChild(element);
+            }
+        }
+
+        function checkAnswers() {
+            let correctCount = 0;
+            document.querySelectorAll('.adjective').forEach((el) => {
+                const parentId = el.parentElement.id;
+                const type = el.getAttribute('data-type');
+
+                if ((parentId === 'i-adjectives' && type === 'i') || (parentId === 'na-adjectives' && type === 'na')) {
+                    el.classList.add('correct');
+                    el.classList.remove('incorrect');
+                    correctCount++;
+                } else {
+                    el.classList.add('incorrect');
+                    el.classList.remove('correct');
+                }
+            });
+
+            document.getElementById('result').textContent = `You got ${correctCount} out of ${adjectives.length} correct!`;
+        }
+
+        function resetGame() {
+            document.getElementById('result').textContent = '';
+            document.querySelectorAll('.adjective').forEach((el) => {
+                el.classList.remove('correct', 'incorrect');
+            });
+            createAdjectiveElements();
+        }
+
+        createAdjectiveElements();
+    </script>
+</body>
+</html>
