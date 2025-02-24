@@ -154,8 +154,10 @@
             document.getElementById('result').textContent = '';
             document.querySelectorAll('.adjective').forEach((el) => {
                 el.classList.remove('correct', 'incorrect');
-                adjectiveList.appendChild(el); // Move all adjectives back to the original list
+                adjectiveList.appendChild(el);
             });
+            shuffle(adjectives);
+            createAdjectiveElements();
         }
 
         createAdjectiveElements();
